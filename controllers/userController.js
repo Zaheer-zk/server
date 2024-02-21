@@ -12,3 +12,16 @@ export const getAllUsers = async (req, res) => {
     res.status(500).json({ error: err, message: 'Not able to find all users' });
   }
 };
+
+export const createNewUser = async (req, res) => {
+  try {
+    const newUser = new User(req.body);
+    await newUser.save();
+    // console.log(newUser);
+    res.status(201).json(newUser);
+  } catch (err) {
+    res
+      .status(400)
+      .json({ error: err, message: `User not created due to ${err}` });
+  }
+};
