@@ -1,4 +1,5 @@
 import { User } from './../models/user.model.js';
+import bcrypt from 'bcrypt';
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -15,7 +16,7 @@ export const getAllUsers = async (req, res) => {
 
 export const createNewUser = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { name, email, password, gender } = req.body;
 
     const existingUserWithSameEmail = await User.findOne({ email });
 
@@ -23,7 +24,9 @@ export const createNewUser = async (req, res) => {
       return res.status(400).json({ message: 'Email should be unique' });
     }
 
-    const newUser = new User(req.body);
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({ name, email, password: hashPassword, gender });
     const savedUser = await newUser.save();
 
     // console.log(savedUser);

@@ -54,3 +54,38 @@ export const getAdminUser = async (req, res) => {
       .json({ error: err, message: 'Not able to find this users' });
   }
 };
+
+export const changePassword = async (req, res) => {
+  try {
+    const { id, currentPassword, newChangePassword } = req.body;
+
+    console.log(id, currentPassword, newChangePassword);
+
+    const adminUser = await Admin.findById(id);
+
+    console.log('adminUser: ', adminUser);
+
+    const isPasswordMatch = await bcrypt.compare(
+      currentPassword,
+      adminUser.password
+    );
+
+    if (isPasswordMatch) {
+      const hashPassword = await bcrypt.hash(newChangePassword, 10);
+      const updateAdminUser = await Admin.findByIdAndUpdate(
+        id,
+        {
+          password: hashPassword,
+        },
+        {
+          new: true,
+        }
+      );
+      return res.status(201).json(updateAdminUser);
+    }
+  } catch (err) {
+    return res
+      .status(400)
+      .json({ error: err, message: `User not updated due to ${err.message}` });
+  }
+};
