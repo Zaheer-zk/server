@@ -7,10 +7,19 @@ export const getAllUsers = async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).json({ error: 'No users found' });
     }
-    // console.log(rows);
-    res.json(rows);
+    if (res) {
+      return res.json(rows);
+    } else {
+      return rows;
+    }
   } catch (err) {
-    res.status(500).json({ error: err, message: 'Not able to find all users' });
+    if (res) {
+      return res
+        .status(500)
+        .json({ error: err, message: 'Not able to find all users' });
+    } else {
+      throw err;
+    }
   }
 };
 
